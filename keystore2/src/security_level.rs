@@ -218,8 +218,10 @@ impl KeystoreSecurityLevel {
         let scoping_blob: Vec<u8>;
         let (km_blob, key_properties, key_id_guard, blob_metadata) = match key.domain {
             Domain::BLOB => {
+                log::error!("fscrypt::create_operation::1");
                 check_key_permission(KeyPerm::use_(), key, &None)
                     .context("In create_operation: checking use permission for Domain::BLOB.")?;
+                log::error!("fscrypt::create_operation::2");
                 if forced {
                     check_key_permission(KeyPerm::req_forced_op(), key, &None).context(
                         "In create_operation: checking forced permission for Domain::BLOB.",
@@ -241,6 +243,7 @@ impl KeystoreSecurityLevel {
                 )
             }
             _ => {
+                log::error!("fscrypt::create_operation::3");
                 let (key_id_guard, mut key_entry) = DB
                     .with::<_, Result<(KeyIdGuard, KeyEntry)>>(|db| {
                         LEGACY_MIGRATOR.with_try_migrate(&key, caller_uid, || {
@@ -250,17 +253,19 @@ impl KeystoreSecurityLevel {
                                 KeyEntryLoadBits::KM,
                                 caller_uid,
                                 |k, av| {
+                                    log::error!("fscrypt::create_operation::5");
                                     check_key_permission(KeyPerm::use_(), k, &av)?;
                                     if forced {
                                         check_key_permission(KeyPerm::req_forced_op(), k, &av)?;
                                     }
+                                    log::error!("fscrypt::create_operation::6");
                                     Ok(())
                                 },
                             )
                         })
                     })
                     .context("In create_operation: Failed to load key blob.")?;
-
+                log::error!("fscrypt::create_operation::7");
                 let (blob, blob_metadata) =
                     key_entry.take_key_blob_info().ok_or_else(Error::sys).context(concat!(
                         "In create_operation: Successfully loaded key entry, ",
@@ -268,6 +273,7 @@ impl KeystoreSecurityLevel {
                     ))?;
                 scoping_blob = blob;
 
+                log::error!("fscrypt::create_operation::8");
                 (
                     &scoping_blob,
                     Some((key_id_guard.id(), key_entry.into_key_parameters())),

@@ -520,6 +520,7 @@ impl OperationDb {
         logging_info: LoggingInfo,
     ) -> Arc<Operation> {
         // We use unwrap because we don't allow code that can panic while locked.
+        log::error!("decrypt::create_operation");
         let mut operations = self.operations.lock().expect("In create_operation.");
 
         let mut index: usize = 0;

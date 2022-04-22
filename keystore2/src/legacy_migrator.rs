@@ -133,6 +133,8 @@ impl LegacyMigrator {
     /// Ok(STATE_EMPTY) if the database is empty. An error is returned if the loader
     /// was not initialized and cannot be initialized.
     fn check_state(&self) -> Result<u8> {
+        Ok(Self::STATE_EMPTY)
+        /*
         let mut first_try = true;
         loop {
             match (self.state.load(Ordering::Relaxed), first_try) {
@@ -192,6 +194,7 @@ impl LegacyMigrator {
                 (s, _) => panic!("Unknown legacy migrator state. {} ", s),
             }
         }
+        */
     }
 
     /// List all aliases for uid in the legacy database.
